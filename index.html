@@ -1494,7 +1494,7 @@ const AXIS_DESCS = {"DAMAGE": "적에게 피해를 입히는 카드.", "DAMAGE_A
 function axisDesc(key) { return AXIS_DESCS[key] || ''; }
 
 // 한글 태그 → 영문 번역 (tag_localization.json 에서 주입됨, 영문 검색용)
-const TAG_EN = {"공격": "Attack", "방어": "Block", "안정": "Stable", "드로우": "Draw", "독": "Poison", "성장": "Scaling", "광역": "AOE", "디버프": "Debuff", "취약": "Vulnerable", "약화": "Weak", "허약": "Frail", "교활": "Sly", "단도": "Shiv", "종말": "Doom", "영혼": "Soul", "구체": "Orb", "골골이": "Osty", "제작": "Forge", "소환": "Minion", "별": "Star", "휘발성": "Ethereal", "소멸": "Exhaust", "보존": "Retain", "스타터": "Starter", "레어": "Rare", "0코": "0 Cost", "템포": "Tempo", "무거움": "Heavy", "중복과잉": "Over-dup", "코어": "Core", "시너지": "Synergy", "보스대응": "Boss Counter", "보스리스크": "Boss Risk", "생존": "Survive", "후반강점": "Late-game", "높은 가치": "High Value", "가치 밀도": "Value Density", "유틸리티": "Utility", "과포화": "Oversat", "외부빌드": "Off-Build", "약점 보완": "Shore Up", "독 빌드": "Poison Build", "종말 빌드": "Doom Build", "성장 빌드": "Scaling Build", "소멸 빌드": "Exhaust Build", "별 빌드": "Star Build", "골골이 빌드": "Osty Build", "제작 빌드": "Forge Build", "소환 빌드": "Minion Build", "방어 빌드": "Block Build", "광역 빌드": "AOE Build", "드로우 빌드": "Draw Build", "단도 빌드": "Shiv Build", "교활 빌드": "Sly Build", "강화됨": "Upgraded", "강화 가치": "Upg. Value", "강화 가치+": "Upg. Value+", "강화 가치++": "Upg. Value++", "후보": "Candidate", "희소": "Rare Pick", "버스트": "Burst", "덱 불일치": "Off-Synergy", "취약 증폭": "Vuln Amp", "약화 증폭": "Weak Amp", "에너지": "Energy", "주의": "Caution", "무료 공격": "Free Attack", "군주의 칼날": "Lord's Blade", "버리기": "Discard", "재발동": "Replay", "타격": "Strike", "상태이상": "Status", "긍정": "Positive", "부정": "Negative", "_ui.deck_links": "Deck Links"};
+const TAG_EN = {"공격": "Attack", "방어": "Block", "안정": "Stable", "드로우": "Draw", "독": "Poison", "성장": "Scaling", "광역": "AOE", "디버프": "Debuff", "취약": "Vulnerable", "약화": "Weak", "허약": "Frail", "교활": "Sly", "단도": "Shiv", "종말": "Doom", "영혼": "Soul", "구체": "Orb", "골골이": "Osty", "제작": "Forge", "소환": "Minion", "별": "Star", "휘발성": "Ethereal", "소멸": "Exhaust", "보존": "Retain", "스타터": "Starter", "레어": "Rare", "0코": "0 Cost", "템포": "Tempo", "무거움": "Heavy", "중복과잉": "Over-dup", "코어": "Core", "시너지": "Synergy", "보스대응": "Boss Counter", "보스리스크": "Boss Risk", "생존": "Survive", "후반강점": "Late-game", "높은 가치": "High Value", "가치 밀도": "Value Density", "유틸리티": "Utility", "과포화": "Oversat", "외부빌드": "Off-Build", "약점 보완": "Shore Up", "독 빌드": "Poison Build", "종말 빌드": "Doom Build", "성장 빌드": "Scaling Build", "소멸 빌드": "Exhaust Build", "별 빌드": "Star Build", "골골이 빌드": "Osty Build", "제작 빌드": "Forge Build", "소환 빌드": "Minion Build", "방어 빌드": "Block Build", "광역 빌드": "AOE Build", "드로우 빌드": "Draw Build", "단도 빌드": "Shiv Build", "교활 빌드": "Sly Build", "강화됨": "Upgraded", "강화 가치": "Upg. Value", "강화 가치+": "Upg. Value+", "강화 가치++": "Upg. Value++", "후보": "Candidate", "희소": "Rare Pick", "버스트": "Burst", "덱 불일치": "Off-Synergy", "취약 증폭": "Vuln Amp", "약화 증폭": "Weak Amp", "에너지": "Energy", "랜덤": "Random", "무료 공격": "Free Attack", "군주의 칼날": "Lord's Blade", "버리기": "Discard", "재발동": "Replay", "타격": "Strike", "상태이상": "Status", "긍정": "Positive", "부정": "Negative", "_ui.deck_links": "Deck Links"};
 
 function axisFamily(axis) {
   // AOE_ 접두사는 베이스 패밀리에 귀속 (AOE_POISON → POISON 패밀리).
@@ -8358,8 +8358,8 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
       return;
     }
     list.innerHTML = '';
-    const OUTCOME_LABEL = {victory: '승리', defeat: '패배', unknown: '미확인', in_progress: '진행 중'};
-    const OUTCOME_COLOR = {victory: '#69db7c', defeat: '#ff6b6b', unknown: '#868e96', in_progress: '#ffa94d'};
+    const OUTCOME_LABEL = {victory: '승리', defeat: '패배', ended: '종료', unknown: '미확인', in_progress: '진행 중'};
+    const OUTCOME_COLOR = {victory: '#69db7c', defeat: '#ff6b6b', ended: '#868e96', unknown: '#868e96', in_progress: '#ffa94d'};
     for (const id of ids) {
       const snaps = SNAPS[id];
       const s = snaps[snaps.length - 1];
@@ -8391,8 +8391,8 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
     const body = document.getElementById('snap-panel-body');
     if (!body) return;
     let html = '';
-    const OUTCOME_LABEL = {victory: '승리 ✓', defeat: '패배 ✗', unknown: '미확인', in_progress: '진행 중 ▶'};
-    const OUTCOME_COLOR = {victory: '#69db7c', defeat: '#ff6b6b', unknown: '#868e96', in_progress: '#ffa94d'};
+    const OUTCOME_LABEL = {victory: '승리 ✓', defeat: '패배 ✗', ended: '종료', unknown: '미확인', in_progress: '진행 중 ▶'};
+    const OUTCOME_COLOR = {victory: '#69db7c', defeat: '#ff6b6b', ended: '#868e96', unknown: '#868e96', in_progress: '#ffa94d'};
     const outcome = snap.outcome || 'unknown';
     const outcomeStr = OUTCOME_LABEL[outcome] || outcome;
     const outcomeCol = OUTCOME_COLOR[outcome] || '#868e96';
