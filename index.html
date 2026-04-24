@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>STS2 카드 어드바이저</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♠</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=Major+Mono+Display&display=swap" rel="stylesheet">
@@ -2882,9 +2881,9 @@ document.addEventListener('DOMContentLoaded', () => {
 </div>
 <div class="sidebar-section"><div class="sidebar-section-head"><h2>카드명 검색</h2></div><div class="axis-search-wrap"><input type="text" id="card-search" class="axis-search-input" placeholder="카드명 검색..." oninput="setSearch(this.value)" autocomplete="off"><button id="search-clear" class="search-clear" onclick="clearSearch()" style="display:none" title="지우기">✕</button></div><span id="search-count" class="search-count" style="font-size:11px;color:var(--text-dim);margin-top:3px;display:block"></span></div><div id="sort-ctrl-section" class="sort-ctrl-section" style="display:none"><span id="sort-label" class="sort-label"></span><button class="axis-filter-clear" onclick="resetSort()">정렬 초기화</button></div>
 <div class="sidebar-section"><div class="sidebar-section-head"><h2>축 필터</h2><button id="axis-filter-clear" class="axis-filter-clear" onclick="clearAxisFilter()" style="display:none">해제</button></div><div class="axis-search-wrap"><input type="text" id="axis-search" class="axis-search-input" placeholder="축 검색..." oninput="setAxisSearch(this.value)" autocomplete="off"><button id="axis-search-clear" class="search-clear" onclick="clearAxisSearch()" style="display:none" title="지우기">✕</button></div><div id="axis-chip-list" class="axis-chip-list"></div></div>
-<div class="sidebar-section snap-section"><div class="sidebar-section-head"><h2>덱 스냅샷</h2><button class="snap-clear-btn" onclick="clearSnapCache()" title="저장된 캐시 삭제">캐시 삭제</button></div><div class="snap-btn-row"><label class="snap-load-btn" title="run_snapshots 폴더 전체 선택 (Chrome/Edge)">📂 폴더<input type="file" id="snap-file-input" webkitdirectory multiple style="display:none" onchange="loadSnapshotFiles(this.files)"></label><label class="snap-load-btn" title="런 폴더 안의 snap_*.json 파일 직접 선택">📄 파일<input type="file" id="snap-file-input2" multiple accept=".json" style="display:none" onchange="loadSnapshotFiles(this.files)"></label></div><div id="snap-server-badge"></div><div id="snap-path-hint" class="snap-path-hint"></div><div id="snap-status" class="snap-status"></div><div id="snap-run-list" class="snap-run-list"></div></div>
 </nav><main class="content">
-<h1>STS2 카드 카탈로그</h1>
+<div class="main-tab-nav"><button class="main-tab-btn main-tab-active" id="main-tab-catalog-btn" onclick="switchMainTab('catalog')">카드 카탈로그</button><button class="main-tab-btn" id="main-tab-deck-btn" onclick="switchMainTab('deck')">덱 분석</button></div><div id="main-tab-catalog">
+<h1>STS2 카드 어드바이저</h1>
 <p class="meta">v0.103.2</p>
 <div class="ax-axis-legend"><span class="legend-label">축 태그:</span><code class="ax-tag ax-added">초록 = 강화 시 추가</code><code class="ax-tag ax-removed">빨강(취소선) = 강화 시 제거</code><code class="ax-tag ax-upg-val">노란색 = 강화 가치 등급</code><span style="color:rgba(255,190,60,0.7);font-family:var(--mono);font-size:10px">(+)</span><span style="color:var(--text-dim)">= 강화 효과 있음 (호버 시 상세)</span><span style="background:#2d6a4f;color:#b7e4c7;font-size:9px;padding:1px 4px;border-radius:2px;font-family:var(--mono)">↑</span><span style="color:var(--text-dim)">= 강화 시 가치 상승</span></div>
 <div class="my-picks-bar"><span class="filter-label">내 픽</span><button class="act-btn" onclick="exportMyPicks()">JSON 내보내기</button><button class="act-btn" onclick="importMyPicks()">JSON 불러오기</button><button class="act-btn act-danger" onclick="clearMyPicks()">전체 초기화</button><input type="file" id="my-import-file" accept=".json" style="display:none" onchange="handleImportFile(event)"><span id="save-status" class="save-status"></span></div>
@@ -7939,6 +7938,8 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
 <tr class="card-row" data-card-id="CARD.BYRDONIS_EGG" data-card-name="섀도니스 알" data-card-axes="UNPLAYABLE" data-card-tier="" data-card-cost="-1" data-card-star-cost="0" data-card-tags="" data-card-desc="" data-upg-desc="" data-upg-cost="-1" data-upg-axes="UNPLAYABLE" data-card-type="Quest" data-card-rarity="Quest" data-owner-char="공용" data-origin-char="공용"><td><button class="star-btn" title="픽 토글" onclick="togglePick(this)">☆</button></td><td><span class="tier-badge" style="background:#868e96"></span></td><td class="card-name">섀도니스 알</td><td><span class="origin-shared">공용</span></td><td class="card-cost">-1</td><td class="card-star-cost"><span class="cost-none">-</span></td><td>Quest</td><td>Quest</td><td class="card-axes"><code class="ax-tag" title="직접 사용할 수 없는 카드 — 특수한 방법으로만 효과 발동 가능.">사용불가</code></td></tr>
 </tbody></table>
 </section>
+</div>
+<div id="main-tab-deck" style="display:none"><div class="deck-page"><h1>덱 분석</h1><div class="deck-controls-bar"><div class="snap-btn-row"><label class="snap-load-btn" title="run_summaries 폴더 전체 선택 (Chrome/Edge)">📂 폴더<input type="file" id="snap-file-input" webkitdirectory multiple style="display:none" onchange="loadSnapshotFiles(this.files)"></label><label class="snap-load-btn" title="run_summary_*.json 파일 직접 선택">📄 파일<input type="file" id="snap-file-input2" multiple accept=".json" style="display:none" onchange="loadSnapshotFiles(this.files)"></label></div><button class="snap-clear-btn" onclick="clearSnapCache()" title="저장된 캐시 삭제">캐시 삭제</button><div id="snap-server-badge"></div></div><div id="snap-path-hint" class="snap-path-hint"></div><div id="snap-status" class="snap-status"></div><div id="snap-run-list" class="snap-run-list deck-run-list"></div></div></div>
 <div id="card-tooltip"><div class="tt-title"></div><div class="tt-desc"></div><div class="tt-upg-wrap" style="display:none"><div class="tt-divider"></div><div class="tt-upg-label">강화</div><div class="tt-upg-desc"></div></div></div><div id="synergy-modal"><div id="synergy-panel"></div></div><div id="axis-guide-modal" onclick="if(event.target.id==='axis-guide-modal')closeAxisGuide()"><div id="axis-guide-panel"><h2>축(Axis) 가이드<button class="syn-close-btn" onclick="closeAxisGuide()">✕ 닫기</button></h2><div class="ag-intro">각 카드에는 <strong>축(Axis)</strong> 태그가 붙어 있습니다. 축은 카드가 어떤 메커니즘에 기여하는지를 나타내며, 어드바이저가 현재 덱의 방향과 맞는 카드를 추천하는 기준으로 사용됩니다.<br>카드 이름 위에 마우스를 올리면 설명을 볼 수 있고, 사이드바의 축 칩을 클릭하면 해당 축을 가진 카드만 필터링됩니다.</div><div class="ag-section-title">역할 접미사 — Producer / Consumer / Amplifier</div><div class="ag-role-grid"><div class="ag-role-card"><div class="ag-role-name">PRODUCER</div><div class="ag-role-desc">해당 자원·메커니즘을 생산하거나 세팅하는 카드. 빌드의 원천 역할.</div></div><div class="ag-role-card"><div class="ag-role-name">CONSUMER</div><div class="ag-role-desc">해당 자원·메커니즘을 소비하거나 조건으로 삼아 이득을 얻는 카드.</div></div><div class="ag-role-card"><div class="ag-role-name">AMPLIFIER</div><div class="ag-role-desc">해당 메커니즘의 효과를 배가하거나 전체 출력을 높이는 카드.</div></div><div class="ag-role-card"><div class="ag-role-name">PAYOFF</div><div class="ag-role-desc">특정 상태(높은 방어도, 구체 보유 등)가 충족됐을 때 이득을 얻는 카드.</div></div></div><div class="ag-search-wrap"><input id="ag-search" class="ag-search-input" type="text" placeholder="축 이름·키워드 검색…" oninput="filterAxisGuide(this.value)" autocomplete="off"><button class="ag-search-clear" onclick="clearAxisGuideSearch()" title="검색 초기화">✕</button><span id="ag-search-count"></span></div><div id="ag-axis-body"></div></div></div><div id="snap-modal" onclick="if(event.target.id==='snap-modal')closeSnap()"><div id="snap-panel"><div class="snap-panel-header"><h2 id="snap-panel-title">덱 스냅샷</h2><button class="syn-close-btn" onclick="closeSnap()">✕ 닫기</button></div><div class="snap-tab-bar"><button class="snap-tab snap-tab-active" id="snap-tab-record-btn" onclick="switchSnapTab('record')">보상 기록</button><button class="snap-tab" id="snap-tab-synergy-btn" onclick="switchSnapTab('synergy')">덱 시너지</button></div><div id="snap-tab-record"><div id="snap-panel-body"></div></div><div id="snap-tab-synergy" style="display:none"></div></div></div>
 <style>
 .snap-section { border-top: 1px solid var(--rule); padding-top: 14px; }
@@ -8076,12 +8077,34 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
   padding:1px 5px; border:1px solid #2d6a4f; background:rgba(45,106,79,0.15);
   margin-bottom:4px;
 }
+/* ── 메인 탭 네비게이션 ──────────────────────────────── */
+.main-tab-nav {
+  display:flex; gap:0; border-bottom:2px solid var(--phos-dim);
+  margin-bottom:28px;
+}
+.main-tab-btn {
+  padding:9px 26px; background:transparent; border:none;
+  border-bottom:2px solid transparent; color:var(--text-dim);
+  font-family:var(--mono); font-size:13px; cursor:pointer;
+  margin-bottom:-2px; transition:color 0.12s,border-color 0.12s;
+  letter-spacing:0.06em;
+}
+.main-tab-btn:hover { color:var(--phos); }
+.main-tab-btn.main-tab-active { color:var(--phos); border-bottom-color:var(--phos); }
+/* ── 덱 분석 탭 레이아웃 ─────────────────────────────── */
+.deck-page h1 { margin-bottom:18px; }
+.deck-controls-bar {
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding-bottom:14px; border-bottom:1px solid var(--rule); margin-bottom:14px;
+}
+.deck-controls-bar .snap-btn-row { margin-bottom:0; }
+.snap-run-list.deck-run-list { max-height:none; }
 </style>
 <script>
 (function() {
   const TIER_COLORS = {S:'#ffd700', A:'#cc99ff', B:'#74c0fc', C:'#69db7c', D:'#dee2e6'};
-  const LS_KEY  = 'sts2_advisor_snaps_v1';
-  const LS_META = 'sts2_advisor_snaps_meta_v1';
+  const LS_KEY  = 'sts2_advisor_summaries_v2';
+  const LS_META = 'sts2_advisor_summaries_meta_v2';
   let SNAPS = {};
   let EXPANDED = {};
   let _currentSnap = null;
@@ -8102,12 +8125,11 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
       const raw = localStorage.getItem(LS_KEY);
       if (!raw) return;
       SNAPS = JSON.parse(raw);
-      for (const id in SNAPS) SNAPS[id].sort((a,b) => (a.seq||0)-(b.seq||0));
       renderSnapList();
       const meta = JSON.parse(localStorage.getItem(LS_META) || '{}');
       if (meta.rc) {
         const d = meta.saved ? new Date(meta.saved).toLocaleString('ko-KR', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
-        setStatus(meta.rc + '개 런 / ' + meta.tc + '개 (캐시' + (d ? ' ' + d : '') + ')');
+        setStatus(meta.rc + '개 런 요약 (캐시' + (d ? ' ' + d : '') + ')');
       }
     } catch(e) {}
   }
@@ -8127,14 +8149,12 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
       if (!Array.isArray(arr)) return false;
       SNAPS = {};
       for (const s of arr) {
-        if (s.run_id && s.floor !== undefined)
+        if (s.run_id && s.final_floor !== undefined)
           (SNAPS[s.run_id] = SNAPS[s.run_id] || []).push(s);
       }
-      for (const id in SNAPS) SNAPS[id].sort((a,b) => (a.seq||0)-(b.seq||0));
       renderSnapList();
       const rc = Object.keys(SNAPS).length;
-      const tc = Object.values(SNAPS).reduce((n,a) => n+a.length, 0);
-      setStatus('🟢 서버 동기화 — ' + rc + '개 런 / ' + tc + '개');
+      setStatus('🟢 서버 동기화 — ' + rc + '개 런 요약');
       return true;
     } catch(e) { return false; }
   }
@@ -8143,21 +8163,20 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
   window.loadSnapshotFiles = async function(files) {
     const loaded = [];
     for (const f of files) {
-      if (!f.name.endsWith('.json') || !f.name.startsWith('snap_')) continue;
+      if (!f.name.endsWith('.json') || !f.name.startsWith('run_summary_')) continue;
       try {
         const snap = JSON.parse(await f.text());
-        if (snap.run_id && snap.floor !== undefined) loaded.push(snap);
+        if (snap.run_id && snap.final_floor !== undefined) loaded.push(snap);
       } catch(e) {}
     }
     SNAPS = {};
     for (const s of loaded) {
       (SNAPS[s.run_id] = SNAPS[s.run_id] || []).push(s);
     }
-    for (const id in SNAPS) SNAPS[id].sort((a,b) => (a.seq||0)-(b.seq||0));
     renderSnapList();
     saveToStorage();
     const rc = Object.keys(SNAPS).length;
-    setStatus(rc + '개 런 / ' + loaded.length + '개 스냅샷 — 캐시 저장됨');
+    setStatus(rc + '개 런 요약 로드됨 — 캐시 저장됨');
   };
 
   window.clearSnapCache = function() {
@@ -8171,37 +8190,29 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
     const list = document.getElementById('snap-run-list');
     if (!list) return;
     const ids = Object.keys(SNAPS).sort().reverse();
-    if (!ids.length) { list.innerHTML = '<span class="snap-empty">스냅샷 없음</span>'; return; }
+    if (!ids.length) { list.innerHTML = '<span class="snap-empty">런 요약 없음</span>'; return; }
     list.innerHTML = '';
+    const OUTCOME_LABEL = {victory: '승리', defeat: '패배', unknown: '미확인'};
+    const OUTCOME_COLOR = {victory: '#69db7c', defeat: '#ff6b6b', unknown: '#868e96'};
     for (const id of ids) {
       const snaps = SNAPS[id];
-      const last = snaps[snaps.length - 1];
-      const char = last.character || '?';
+      const s = snaps[snaps.length - 1];
+      const char = s.character || '?';
       const dateStr = id.length >= 15
         ? id.slice(0,4)+'-'+id.slice(4,6)+'-'+id.slice(6,8)+' '+id.slice(9,11)+':'+id.slice(11,13)
         : id;
+      const outcome = s.outcome || 'unknown';
+      const outcomeLabel = OUTCOME_LABEL[outcome] || outcome;
+      const outcomeColor = OUTCOME_COLOR[outcome] || '#868e96';
       const item = document.createElement('div');
       item.className = 'snap-run-item';
-      const hdr = document.createElement('div');
-      hdr.className = 'snap-run-header';
-      hdr.innerHTML = '<span class="snap-run-char">' + char + '</span>'
-        + '<span class="snap-run-meta">' + dateStr + '<br>F' + last.floor + ' / ' + snaps.length + '스냅</span>'
-        + '<span class="snap-run-toggle">' + (EXPANDED[id] ? '▾' : '▸') + '</span>';
-      hdr.onclick = () => { EXPANDED[id] = !EXPANDED[id]; renderSnapList(); };
-      item.appendChild(hdr);
-      const fl = document.createElement('div');
-      fl.className = 'snap-floor-list';
-      fl.style.display = EXPANDED[id] ? '' : 'none';
-      for (const s of snaps) {
-        const btn = document.createElement('button');
-        btn.className = 'snap-floor-btn';
-        const arch = s.committed_archetypes && s.committed_archetypes.length
-          ? ' [' + s.committed_archetypes.join('/') + ']' : '';
-        btn.textContent = 'F' + s.floor + ' — ' + s.deck_size + '장' + arch;
-        btn.onclick = () => showSnapshot(s);
-        fl.appendChild(btn);
-      }
-      item.appendChild(fl);
+      item.style.cursor = 'pointer';
+      item.innerHTML = '<div class="snap-run-header">'
+        + '<span class="snap-run-char">' + char + '</span>'
+        + '<span class="snap-run-meta">' + dateStr + '<br>F' + s.final_floor + ' — ' + s.deck_size + '장</span>'
+        + '<span class="snap-run-toggle" style="color:' + outcomeColor + '">' + outcomeLabel + '</span>'
+        + '</div>';
+      item.onclick = () => showSnapshot(s);
       list.appendChild(item);
     }
   }
@@ -8212,22 +8223,24 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
     const body = document.getElementById('snap-panel-body');
     if (!body) return;
     let html = '';
-    const archs = snap.committed_archetypes && snap.committed_archetypes.length
-      ? snap.committed_archetypes.map(a => '<span class="snap-arch-badge">' + a + '</span>').join('')
-      : '<span class="snap-arch-none">감지된 아키타입 없음</span>';
+    const OUTCOME_LABEL = {victory: '승리 ✓', defeat: '패배 ✗', unknown: '미확인'};
+    const OUTCOME_COLOR = {victory: '#69db7c', defeat: '#ff6b6b', unknown: '#868e96'};
+    const outcome = snap.outcome || 'unknown';
+    const outcomeStr = OUTCOME_LABEL[outcome] || outcome;
+    const outcomeCol = OUTCOME_COLOR[outcome] || '#868e96';
     html += '<div class="snap-info-row">'
-      + '<span class="snap-info-item"><span class="snap-info-label">층&nbsp;</span><strong>' + snap.floor + '</strong></span>'
+      + '<span class="snap-info-item"><span class="snap-info-label">결과&nbsp;</span><strong style="color:' + outcomeCol + '">' + outcomeStr + '</strong></span>'
+      + '<span class="snap-info-item"><span class="snap-info-label">최종 층&nbsp;</span><strong>F' + snap.final_floor + '</strong></span>'
       + '<span class="snap-info-item"><span class="snap-info-label">캐릭터&nbsp;</span><strong>' + (snap.character||'?') + '</strong></span>'
       + '<span class="snap-info-item"><span class="snap-info-label">덱&nbsp;</span><strong>' + snap.deck_size + '장</strong></span>'
-      + '</div>'
-      + '<div class="snap-archs">' + archs + '</div>';
+      + '</div>';
     if (snap.deck_cards && snap.deck_cards.length) {
       html += '<div class="snap-block"><div class="snap-block-title">현재 덱 (' + snap.deck_cards.length + '장)</div>'
         + '<div class="snap-deck-cards">'
         + snap.deck_cards.map(c => '<span class="snap-deck-card">' + c + '</span>').join('')
         + '</div></div>';
     }
-    const axes = (snap.top_deck_axes || []).filter(a => a.count >= 2);
+    const axes = (snap.deck_axes || []).filter(a => a.count >= 2);
     if (axes.length) {
       const maxCount = Math.max(...axes.map(a => a.count));
       html += '<div class="snap-block"><div class="snap-block-title">덱 축 분포</div><div class="snap-axes">'
@@ -8241,31 +8254,8 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
           }).join('')
         + '</div></div>';
     }
-    if (snap.reward_cards && snap.reward_cards.length) {
-      const maxScore = Math.max(...snap.reward_cards.map(r => r.score));
-      html += '<div class="snap-block"><div class="snap-block-title">보상 카드</div>'
-        + '<div class="snap-reward-grid">'
-        + snap.reward_cards.map(r => {
-            const col = TIER_COLORS[r.tier] || '#868e96';
-            const top = r.score === maxScore ? '<span class="snap-top-badge">★ TOP</span>' : '';
-            const reasons = (r.reasons||[]).slice(0,3).map(re => '<div class="snap-reason">· ' + re + '</div>').join('');
-            const tags = (r.reason_tags||[]).slice(0,3).map(t => '<span class="snap-rtag">' + t + '</span>').join('');
-            return '<div class="snap-card-box' + (r.score===maxScore?' snap-card-top':'') + '">'
-              + top
-              + '<div class="snap-card-name">' + r.name + '</div>'
-              + '<div class="snap-card-tier" style="color:' + col + '">' + r.tier + '(' + r.score + ')</div>'
-              + '<div class="snap-card-tags">' + tags + '</div>'
-              + '<div class="snap-card-reasons">' + reasons + '</div>'
-              + '</div>';
-          }).join('')
-        + '</div></div>';
-    }
-    if (snap.should_skip) {
-      html += '<div class="snap-skip-box">⏭ 넘기기 추천 (' + snap.skip_score + '점)'
-        + (snap.skip_reason ? ': ' + snap.skip_reason : '') + '</div>';
-    }
     document.getElementById('snap-panel-title').textContent =
-      'F' + snap.floor + ' — ' + (snap.character||'?') + ' — 덱 ' + snap.deck_size + '장';
+      (snap.character||'?') + ' — F' + snap.final_floor + ' — ' + outcomeStr;
     body.innerHTML = html;
     // 항상 보상 기록 탭으로 시작
     switchSnapTab('record');
@@ -8347,6 +8337,19 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
     if (m) m.classList.remove('show');
   };
 
+  window.switchMainTab = function(tab) {
+    const catalogDiv = document.getElementById('main-tab-catalog');
+    const deckDiv    = document.getElementById('main-tab-deck');
+    const catalogBtn = document.getElementById('main-tab-catalog-btn');
+    const deckBtn    = document.getElementById('main-tab-deck-btn');
+    if (catalogDiv) catalogDiv.style.display = tab === 'catalog' ? '' : 'none';
+    if (deckDiv)    deckDiv.style.display    = tab === 'deck'    ? '' : 'none';
+    if (catalogBtn) catalogBtn.className = 'main-tab-btn' + (tab === 'catalog' ? ' main-tab-active' : '');
+    if (deckBtn)    deckBtn.className    = 'main-tab-btn' + (tab === 'deck'    ? ' main-tab-active' : '');
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) sidebar.style.display = tab === 'catalog' ? '' : 'none';
+  };
+
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') window.closeSnap();
   });
@@ -8358,8 +8361,8 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
     if (hint) {
       const isWin = navigator.userAgent.toLowerCase().includes('windows');
       const path = isWin
-        ? '%APPDATA%\\Sts2CardAdvisor\\run_snapshots\\'
-        : '~/Library/Application Support/Sts2CardAdvisor/run_snapshots/';
+        ? '%APPDATA%\\Sts2CardAdvisor\\run_summaries\\'
+        : '~/Library/Application Support/Sts2CardAdvisor/run_summaries/';
       hint.textContent = path;
       hint.title = '클릭하면 경로 복사';
       hint.onclick = function() {
