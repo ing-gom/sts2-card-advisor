@@ -7981,7 +7981,7 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
 </tbody></table>
 </section>
 </div>
-<div id="main-tab-deck" style="display:none"><div class="deck-page"><h1>덱 분석</h1><div class="deck-controls-bar"><div id="snap-server-badge"></div><div id="snap-status" class="snap-status"></div></div><div id="snap-run-list" class="snap-run-list deck-run-list"></div></div></div>
+<div id="main-tab-deck" style="display:none"><div class="deck-page"><h1>덱 분석</h1><div class="deck-controls-bar"><div id="snap-server-badge"></div><div id="snap-status" class="snap-status"></div><button id="deck-help-btn" class="deck-help-btn" onclick="toggleDeckHelp()">? 도움말</button></div><div id="deck-help-panel" class="deck-help-panel"><h3>덱 분석 탭 사용 방법</h3><div class="help-step"><span class="deck-help-step-num">1.</span><span>STS2를 실행하고 <strong>Sts2CardAdvisor</strong> 모드를 활성화하세요. 카드 보상·상점 화면에 진입하면 자동으로 런 데이터가 수집됩니다.</span></div><div class="help-step"><span class="deck-help-step-num">2.</span><span>화면 왼쪽 상단의 <strong style="color:var(--phos)">🟢 동기화 중</strong> 배지가 표시되면 게임과 연결된 상태입니다. <strong style="color:#ff6b6b">🔴</strong>이면 게임이 실행중이지 않습니다.</span></div><div class="help-step"><span class="deck-help-step-num">3.</span><span>아래 런 목록에서 항목을 클릭하면 상세 모달이 열립니다.</span></div><div class="deck-help-tab-desc"><div class="deck-help-tab-badge"><strong>보상 기록</strong> — 층별 카드 선택 이력, 현재 덱 구성, 축 분포 차트</div><div class="deck-help-tab-badge"><strong>덱 시너지</strong> — 현재 덱 기준으로 가장 시너지가 높은 추천 카드 목록</div></div><div class="help-step" style="margin-top:10px"><span class="deck-help-step-num">4.</span><span>런이 완전히 종료(승리·패배)되어야 목록에 최종 기록이 남습니다. 진행 중인 런은 <strong style="color:#ffa94d">진행 중</strong>으로 표시됩니다.</span></div></div><div id="snap-run-list" class="snap-run-list deck-run-list"></div></div></div>
 <div id="card-tooltip"><div class="tt-title"></div><div class="tt-desc"></div><div class="tt-upg-wrap" style="display:none"><div class="tt-divider"></div><div class="tt-upg-label">강화</div><div class="tt-upg-desc"></div></div></div><div id="synergy-modal"><div id="synergy-panel"></div></div><div id="axis-guide-modal" onclick="if(event.target.id==='axis-guide-modal')closeAxisGuide()"><div id="axis-guide-panel"><h2>축(Axis) 가이드<button class="syn-close-btn" onclick="closeAxisGuide()">✕ 닫기</button></h2><div class="ag-intro">각 카드에는 <strong>축(Axis)</strong> 태그가 붙어 있습니다. 축은 카드가 어떤 메커니즘에 기여하는지를 나타내며, 어드바이저가 현재 덱의 방향과 맞는 카드를 추천하는 기준으로 사용됩니다.<br>카드 이름 위에 마우스를 올리면 설명을 볼 수 있고, 사이드바의 축 칩을 클릭하면 해당 축을 가진 카드만 필터링됩니다.</div><div class="ag-section-title">역할 접미사 — Producer / Consumer / Amplifier</div><div class="ag-role-grid"><div class="ag-role-card"><div class="ag-role-name">PRODUCER</div><div class="ag-role-desc">해당 자원·메커니즘을 생산하거나 세팅하는 카드. 빌드의 원천 역할.</div></div><div class="ag-role-card"><div class="ag-role-name">CONSUMER</div><div class="ag-role-desc">해당 자원·메커니즘을 소비하거나 조건으로 삼아 이득을 얻는 카드.</div></div><div class="ag-role-card"><div class="ag-role-name">AMPLIFIER</div><div class="ag-role-desc">해당 메커니즘의 효과를 배가하거나 전체 출력을 높이는 카드.</div></div><div class="ag-role-card"><div class="ag-role-name">PAYOFF</div><div class="ag-role-desc">특정 상태(높은 방어도, 구체 보유 등)가 충족됐을 때 이득을 얻는 카드.</div></div></div><div class="ag-search-wrap"><input id="ag-search" class="ag-search-input" type="text" placeholder="축 이름·키워드 검색…" oninput="filterAxisGuide(this.value)" autocomplete="off"><button class="ag-search-clear" onclick="clearAxisGuideSearch()" title="검색 초기화">✕</button><span id="ag-search-count"></span></div><div id="ag-axis-body"></div></div></div><div id="snap-modal" onclick="if(event.target.id==='snap-modal')closeSnap()"><div id="snap-panel"><div class="snap-panel-header"><h2 id="snap-panel-title">덱 스냅샷</h2><button class="syn-close-btn" onclick="closeSnap()">✕ 닫기</button></div><div class="snap-tab-bar"><button class="snap-tab snap-tab-active" id="snap-tab-record-btn" onclick="switchSnapTab('record')">보상 기록</button><button class="snap-tab" id="snap-tab-synergy-btn" onclick="switchSnapTab('synergy')">덱 시너지</button></div><div id="snap-tab-record"><div id="snap-panel-body"></div></div><div id="snap-tab-synergy" style="display:none"></div></div></div>
 <style>
 .snap-section { border-top: 1px solid var(--rule); padding-top: 14px; }
@@ -8141,6 +8141,57 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
 }
 .deck-controls-bar .snap-btn-row { margin-bottom:0; }
 .snap-run-list.deck-run-list { max-height:none; }
+/* ── 덱 분석 도움말 ─────────────────────────────────── */
+.deck-help-btn {
+  margin-left:auto; padding:3px 8px;
+  background:transparent; border:1px solid var(--rule);
+  color:var(--text-dim); font-size:12px; font-family:var(--mono);
+  cursor:pointer; transition:all 0.12s; border-radius:3px;
+  flex-shrink:0;
+}
+.deck-help-btn:hover { border-color:var(--phos-dim); color:var(--phos); }
+.deck-help-panel {
+  display:none; background:var(--bg-raised);
+  border:1px solid var(--phos-dim); border-radius:4px;
+  padding:16px 18px; margin-bottom:16px;
+  font-size:13px; line-height:1.7; color:var(--text-dim);
+}
+.deck-help-panel.show { display:block; }
+.deck-help-panel h3 { color:var(--phos); font-size:13px; margin:0 0 8px; font-family:var(--mono); }
+.deck-help-panel ul { margin:0 0 10px; padding-left:18px; }
+.deck-help-panel li { margin-bottom:4px; }
+.deck-help-panel .help-step {
+  display:flex; gap:10px; align-items:baseline;
+  padding:5px 0; border-top:1px solid var(--rule);
+}
+.deck-help-panel .help-step:first-of-type { border-top:none; padding-top:0; }
+.deck-help-step-num {
+  color:var(--phos); font-weight:700; font-family:var(--mono);
+  font-size:14px; min-width:18px; flex-shrink:0;
+}
+.deck-help-tab-desc {
+  display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;
+}
+.deck-help-tab-badge {
+  background:var(--bg); border:1px solid var(--rule);
+  border-radius:3px; padding:2px 8px;
+  font-family:var(--mono); font-size:12px; color:var(--text-dim);
+}
+.deck-help-tab-badge strong { color:var(--fg); }
+/* ── 빈 상태 안내 ───────────────────────────────────── */
+.snap-empty-guide {
+  padding:28px 8px; color:var(--text-dim);
+  font-family:var(--mono); font-size:13px; line-height:1.8;
+}
+.snap-empty-guide .guide-title {
+  color:var(--text-main); font-size:14px; margin-bottom:12px;
+}
+.snap-empty-guide .guide-step {
+  display:flex; gap:8px; margin-bottom:6px;
+}
+.snap-empty-guide .guide-num {
+  color:var(--phos); font-weight:700; min-width:16px; flex-shrink:0;
+}
 /* ── 로딩 인디케이터 ─────────────────────────────────── */
 .snap-loading {
   display:flex; align-items:center; gap:12px;
@@ -8296,7 +8347,16 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
     const list = document.getElementById('snap-run-list');
     if (!list) return;
     const ids = Object.keys(SNAPS).sort().reverse();
-    if (!ids.length) { list.innerHTML = '<span class="snap-empty">목록이 존재하지 않습니다</span>'; return; }
+    if (!ids.length) {
+      list.innerHTML = '<div class="snap-empty-guide">'
+        + '<div class="guide-title">아직 기록된 런이 없습니다.</div>'
+        + '<div class="guide-step"><span class="guide-num">1.</span><span>STS2를 실행하고 카드 보상 화면에 진입하세요.</span></div>'
+        + '<div class="guide-step"><span class="guide-num">2.</span><span>Sts2CardAdvisor 모드가 활성화되어 있으면 자동으로 데이터가 수집됩니다.</span></div>'
+        + '<div class="guide-step"><span class="guide-num">3.</span><span>런이 끝나거나 저장된 후 이 탭에 목록이 나타납니다.</span></div>'
+        + '<div class="guide-step"><span class="guide-num">4.</span><span>런 항목을 클릭하면 <strong>보상 기록</strong>과 <strong>덱 시너지</strong>를 확인할 수 있습니다.</span></div>'
+        + '</div>';
+      return;
+    }
     list.innerHTML = '';
     const OUTCOME_LABEL = {victory: '승리', defeat: '패배', unknown: '미확인', in_progress: '진행 중'};
     const OUTCOME_COLOR = {victory: '#69db7c', defeat: '#ff6b6b', unknown: '#868e96', in_progress: '#ffa94d'};
@@ -8447,6 +8507,15 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
     if (m) m.classList.remove('show');
   };
 
+  window.toggleDeckHelp = function() {
+    const panel = document.getElementById('deck-help-panel');
+    if (!panel) return;
+    const btn = document.getElementById('deck-help-btn');
+    const isOpen = panel.classList.toggle('show');
+    if (btn) btn.textContent = isOpen ? '? 도움말 닫기' : '? 도움말';
+    try { localStorage.setItem('sts2_deck_help_open', isOpen ? '1' : '0'); } catch(e) {}
+  };
+
   window.switchMainTab = function(tab) {
     const catalogDiv = document.getElementById('main-tab-catalog');
     const deckDiv    = document.getElementById('main-tab-deck');
@@ -8527,6 +8596,8 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
       _serverMode = true;
     } else {
       loadFromStorage();
+      // 서버·캐시 모두 없을 때 로딩 스피너가 남지 않도록 빈 상태 렌더
+      if (!Object.keys(SNAPS).length) renderSnapList();
     }
   });
 })();
