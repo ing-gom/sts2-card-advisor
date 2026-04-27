@@ -846,6 +846,41 @@
   .save-status.ok { color: var(--ok); }
   .save-status.ok::before { content: '✓ '; }
 
+  /* ── 레이더 고정 토글 ───────────────────────────────────── */
+  .radar-pin-toggle {
+    display: flex; align-items: center; gap: 6px;
+    cursor: pointer; user-select: none;
+    font-size: 13px; color: var(--text-dim);
+    padding: 2px 4px;
+    transition: color 0.12s ease;
+  }
+  .radar-pin-toggle:hover { color: var(--text); }
+  .radar-pin-toggle input { cursor: pointer; accent-color: var(--phos); }
+  /* 활성 상태 — 체크된 토글만 phos 컬러 강조 (picks/snap 독립) */
+  .radar-pin-toggle:has(input:checked) { color: var(--phos); }
+
+  /* 레이더 고정 모드 — 호버 툴팁 그대로 떠 있는 상태로 핀.
+     picks/snap 두 개 독립 토글로 분리.
+     position:absolute / box-shadow / 플로팅 외관 모두 유지하고
+     opacity·pointer-events 만 강제로 켠다. */
+  body.radar-pinned-picks .my-deck-radar-wrap:not([hidden]) {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  body.radar-pinned-snap .snap-radar-wrap {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  /* 고정 시 호버 인디케이터 숨김 — 이미 보이고 있으므로 안내 불필요 */
+  body.radar-pinned-picks .my-deck-summary:has(.my-deck-radar-wrap:not([hidden])) .my-deck-score::after {
+    display: none;
+  }
+  body.radar-pinned-snap .snap-radar-hint {
+    display: none;
+  }
+
   /* ── Character section ─────────────────────────────────── */
   .char-section { margin-bottom: 80px; }
   .char-section-title {
@@ -1055,6 +1090,188 @@
     font-size: 13px;
     white-space: nowrap;
     margin-left: auto;
+  }
+
+  /* ── Deck 4-axis radar (floating on hover) ─────────────
+     레이더를 일반 플로우에서 빼서, .my-deck-score 호버 시에만
+     절대 위치 툴팁으로 띄운다. 시너지 리스트 등 아래 콘텐츠를
+     밀지 않도록 함. */
+  .my-deck-summary {
+    position: relative;
+    margin: 8px 0 2px;
+  }
+  .my-deck-summary .my-deck-score {
+    margin: 0;
+    cursor: help;
+  }
+  /* 데이터가 있을 때 — 호버 가능 표시 (작은 ◆ 인디케이터) */
+  .my-deck-summary:has(.my-deck-radar-wrap:not([hidden])) .my-deck-score::after {
+    content: '◆ 6축';
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--text-ghost);
+    letter-spacing: 0.05em;
+    opacity: 0.6;
+    transition: color 0.15s ease, opacity 0.15s ease;
+    flex-shrink: 0;
+  }
+  .my-deck-summary:hover .my-deck-score::after {
+    color: var(--phos);
+    opacity: 1;
+  }
+  .my-deck-radar-wrap {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 10px 6px;
+    background: var(--bg-raised);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.55);
+    /* 기본은 보이지 않음 — 호버 시 페이드인 */
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  .my-deck-radar-wrap[hidden] { display: none; }
+  /* 호버 트리거 — summary 영역 또는 레이더 자체 (마우스 이동 중 사라짐 방지) */
+  .my-deck-summary:hover .my-deck-radar-wrap:not([hidden]),
+  .my-deck-radar-wrap:not([hidden]):hover {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .my-deck-radar {
+    width: 340px;
+    height: auto;
+    overflow: visible;
+    display: block;
+  }
+  .radar-grid {
+    fill: none;
+    stroke: var(--rule);
+    stroke-width: 1;
+    opacity: 0.55;
+  }
+  .radar-grid-outer {
+    stroke: var(--text-dim);
+    stroke-width: 1.2;
+    opacity: 0.85;
+  }
+  .radar-baseline {
+    fill: none;
+    stroke: var(--text-dim);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+    opacity: 0.55;
+  }
+  .radar-axis {
+    stroke: var(--rule);
+    stroke-width: 1;
+    stroke-dasharray: 2 4;
+    opacity: 0.6;
+  }
+  .radar-fill {
+    fill-opacity: 0.28;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    transition: all 0.3s ease;
+  }
+  .radar-vertex {
+    transition: all 0.3s ease;
+  }
+  .radar-label {
+    fill: var(--text-dim);
+    font-size: 11px;
+    font-family: var(--mono);
+    letter-spacing: 0.05em;
+  }
+  .radar-label-weak {
+    fill: var(--alert);
+    font-weight: 700;
+  }
+  .my-deck-radar-legend {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align: center;
+    letter-spacing: 0.03em;
+    max-width: 340px;
+    line-height: 1.4;
+  }
+  .radar-hint b { color: var(--alert); font-weight: 700; }
+  .radar-hint .radar-ok { color: var(--phos-hi); }
+
+  /* 축 설명 접이식 블록 — my-deck-radar-legend / snap-deck-radar-legend 공통 */
+  .radar-desc-toggle {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .radar-desc-toggle > summary {
+    cursor: pointer;
+    list-style: none;
+    text-align: center;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    transition: color 0.12s ease;
+    padding: 2px 0;
+  }
+  .radar-desc-toggle > summary::-webkit-details-marker { display: none; }
+  .radar-desc-toggle > summary::before { content: '▸ '; opacity: 0.7; }
+  .radar-desc-toggle[open] > summary::before { content: '▾ '; }
+  .radar-desc-toggle > summary:hover { color: var(--phos); }
+  .radar-desc-list {
+    margin: 6px 0 0;
+    padding: 8px 6px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 10px;
+    row-gap: 6px;
+    text-align: left;
+    line-height: 1.45;
+    /* 뷰포트 하단에 떠 있는 호버 툴팁이 잘리지 않도록 내부 스크롤로 높이 제한.
+       호버 상태에서 마우스 휠로 안에서 스크롤 가능. */
+    max-height: 240px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  /* 데스크톱 브라우저용 — 스크롤바를 어둡게 통일 */
+  .radar-desc-list::-webkit-scrollbar { width: 6px; }
+  .radar-desc-list::-webkit-scrollbar-track { background: transparent; }
+  .radar-desc-list::-webkit-scrollbar-thumb {
+    background: var(--phos-dim); border-radius: 3px;
+  }
+  .radar-desc-list dt {
+    color: var(--phos-hi);
+    font-weight: 600;
+    font-size: 11px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .radar-desc-list dt .radar-desc-val {
+    color: var(--data);
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 10px;
+    padding: 1px 5px;
+    background: rgba(143,200,223,0.08);
+    border-radius: 3px;
+  }
+  .radar-desc-list dd {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 11px;
   }
 
   .syn-row {
@@ -1840,6 +2057,41 @@ function clearSearch() {
 const STORAGE_KEY    = 'sts2_my_picks_v1';
 const UI_STATE_KEY   = 'sts2_ui_state_v1';
 
+// ─── 레이더 고정 토글 (picks / snap 독립) ──────────────
+// 체크 시 호버 없이 해당 영역 레이더 wrap 만 항상 표시. localStorage 영속.
+const RADAR_PIN_KEYS = {
+  picks: 'sts2_radar_pinned_picks_v1',
+  snap:  'sts2_radar_pinned_snap_v1',
+};
+const RADAR_PIN_CLASSES = {
+  picks: 'radar-pinned-picks',
+  snap:  'radar-pinned-snap',
+};
+
+function toggleRadarPin(which, on) {
+  const cls = RADAR_PIN_CLASSES[which];
+  const key = RADAR_PIN_KEYS[which];
+  if (!cls || !key) return;
+  document.body.classList.toggle(cls, !!on);
+  try { localStorage.setItem(key, on ? '1' : '0'); } catch(e) {}
+}
+
+function loadRadarPin(which) {
+  const cls = RADAR_PIN_CLASSES[which];
+  const key = RADAR_PIN_KEYS[which];
+  if (!cls || !key) return;
+  let on = false;
+  try { on = localStorage.getItem(key) === '1'; } catch(e) {}
+  const cb = document.getElementById('radar-pin-toggle-' + which);
+  if (cb) cb.checked = on;
+  document.body.classList.toggle(cls, on);
+}
+
+function loadAllRadarPins() {
+  loadRadarPin('picks');
+  loadRadarPin('snap');
+}
+
 function saveUiState() {
   try {
     localStorage.setItem(UI_STATE_KEY, JSON.stringify({
@@ -1986,14 +2238,15 @@ function refreshPicks(char) {
     });
   }
 
-  // 덱 조합 점수 업데이트
+  // 덱 조합 점수 업데이트 — ds 는 레이더에도 재사용
   const deckScoreEl = panel.querySelector('.my-deck-score');
+  let ds = null;
   if (deckScoreEl) {
     if (p.picks.length === 0) {
       deckScoreEl.innerHTML = '<span class="deck-score-label">조합 점수</span>'
         + '<span class="deck-score-empty">픽을 선택하세요</span>';
     } else {
-      const ds = computeDeckScore(char);
+      ds = computeDeckScore(char);
       if (ds) {
         const gc = TIER_COLOR[ds.grade] || '#adb5bd';
         deckScoreEl.innerHTML =
@@ -2005,6 +2258,7 @@ function refreshPicks(char) {
       }
     }
   }
+  renderDeckRadar(char, ds);
 
   const top = computeSynergy(char);
   const synList = panel.querySelector('.my-synergy-list');
@@ -2194,7 +2448,10 @@ function computeDeckScore(char) {
     const useUpg = upgradedPickIds.has(row.dataset.cardId);
     const axes = ((useUpg ? row.dataset.upgAxes : row.dataset.cardAxes) || '').split(',').filter(Boolean);
     axes.forEach(a => deckAxisSet.add(a));
-    pickData.push({ id: row.dataset.cardId, axes, tier: row.dataset.cardTier });
+    // 코스트는 X_COST 카드면 2(중간값)로 취급 — 평균 계산 왜곡 방지
+    const rawCost = useUpg ? row.dataset.upgCost : row.dataset.cardCost;
+    const cost = (rawCost === 'X') ? 2 : (parseInt(rawCost, 10) || 0);
+    pickData.push({ id: row.dataset.cardId, axes, tier: row.dataset.cardTier, cost });
   });
 
   if (pickData.length === 0) return null;
@@ -2271,7 +2528,208 @@ function computeDeckScore(char) {
   if (!hasAttack)        gaps.push('딜 없음');
   if (!hasDraw && n >= 8) gaps.push('드로우 없음');
 
-  return { score, grade, gaps };
+  // ── 6축 레이더 정규화 (각 0~100) ──────────────────────────────────
+  // computeDeckScore 의 내부 값들을 활용 + 카드 품질/템포 신규 축 추가.
+  const synergyAxis  = Math.round(synergy  / 40 * 100);
+  const coverageAxis = Math.round(coverage / 30 * 100);
+  // Scaling: SCALING/STRENGTH/생산자 축 보유 픽 비율 — 1장 이상이면 하한 30
+  const SCALING_AXES = new Set([
+    'SCALING','STRENGTH','DEXTERITY','FOCUS','TYPE_POWER',
+    'DOOM_PRODUCER','POISON_PRODUCER','STAR_PRODUCER','BLOCK_SCALING'
+  ]);
+  const scalingCount = pickData.filter(pk => pk.axes.some(a => SCALING_AXES.has(a))).length;
+  const scalingAxis  = scalingCount === 0
+    ? 0
+    : Math.min(100, Math.round(30 + (scalingCount / n) * 140));
+  // Curve: 평균 코스트(1.75 기준 편차) + 코스트 버킷(0/1/2/3+) 다양성
+  const avgCost   = pickData.reduce((a, pk) => a + pk.cost, 0) / n;
+  const avgPenalty = Math.abs(avgCost - 1.75) * 30;
+  const buckets   = new Set(pickData.map(pk => Math.min(pk.cost, 3)));
+  const divPenalty = ({4: 0, 3: 5, 2: 15, 1: 30}[buckets.size] ?? 30);
+  const curveAxis = Math.max(0, Math.min(100, Math.round(100 - avgPenalty - divPenalty)));
+  // Quality: 평균 티어 — 1=D, 5=S 를 0~100 으로 선형 환산. 시너지·커버리지와 독립된
+  // "카드 자체의 강도" 차원. avgTier 는 위에서 이미 산출됨 (TIER_VALS 사용).
+  const qualityAxis = Math.max(0, Math.min(100, Math.round((avgTier - 1) / 4 * 100)));
+  // Tempo: 즉발 임팩트 비율 — (a) 평균 코스트가 낮을수록 + (b) 파워 카드 비중이 적을수록 높다.
+  // 평균 0코 → 100점, 평균 3코 → 1점 선형. 파워 비율 만큼 페널티(최대 -50).
+  // Scaling 축과 의도적으로 anti-correlated: 스케일 빌드는 보통 템포가 낮음.
+  const tempoAvgCost = pickData.reduce((a, pk) => a + Math.min(pk.cost, 3), 0) / n;
+  const powerCount = pickData.filter(pk =>
+    pk.axes.some(a => a === 'TYPE_POWER' || a === 'POWER_TYPE')).length;
+  const powerRatio = powerCount / n;
+  const tempoCostScore   = Math.max(0, 100 - tempoAvgCost * 33);
+  const tempoPowerPen    = powerRatio * 50;
+  const tempoAxis = Math.max(0, Math.min(100, Math.round(tempoCostScore - tempoPowerPen)));
+
+  return {
+    score, grade, gaps,
+    axes: {
+      synergy:  synergyAxis,
+      coverage: coverageAxis,
+      scaling:  scalingAxis,
+      curve:    curveAxis,
+      quality:  qualityAxis,
+      tempo:    tempoAxis,
+    }
+  };
+}
+
+// ── 6축 헥사곤 레이더 렌더링 ────────────────────────────────────────
+// 정육각형 그리드(25/50/75/100%) 위에 6축 값을 채운 폴리곤으로 시각화.
+// 점선 헥사곤은 권장 베이스라인(70). 가장 부족한 축은 라벨을 빨간색으로
+// 강조하고 legend 에 한 줄 힌트로 노출.
+//
+// _drawDeckRadar 는 surface-agnostic — (svgEl, legendEl, ds) 만 받으면
+// 어떤 컨테이너에서도 동일하게 렌더링한다. my-panel(호버) 과 스냅 모달
+// 두 곳에서 공유.
+//
+// 축 순서 (12시 시작, 시계방향, 60° 간격):
+//   시너지 → 스케일링 → 카드 품질 → 코스트 균형 → 커버리지 → 템포
+const _RADAR_AXES = [
+  { key: 'synergy',  label: '시너지',     angle: -90 },
+  { key: 'scaling',  label: '스케일링',   angle: -30 },
+  { key: 'quality',  label: '카드 품질',  angle:  30 },
+  { key: 'curve',    label: '코스트 균형', angle:  90 },
+  { key: 'coverage', label: '커버리지',   angle: 150 },
+  { key: 'tempo',    label: '템포',       angle: 210 },
+];
+const _RADAR_LEGEND_LABEL = {
+  synergy: '내부 시너지', scaling: '스케일링', quality: '카드 품질',
+  curve: '코스트 균형',   coverage: '커버리지', tempo: '템포',
+};
+// 축 설명 — SVG <title> 네이티브 툴팁 + 레이더 하단 접이식 블록 양쪽에서 공유.
+// 한 곳만 수정하면 두 표시 모두 갱신됨.
+const _RADAR_DESCRIPTIONS = {
+  synergy:  '픽 카드들이 서로의 ROLE_NEEDS(역할 수요)를 얼마나 충족하는가. 카드끼리 협동이 잘 될수록 높음. role_needs.json 기반 가중합 / 40점 만점.',
+  scaling:  '후반에 강해지는 능력치. SCALING / STRENGTH / DEXTERITY / FOCUS / TYPE_POWER / *_PRODUCER 축을 보유한 카드 비율. 1장 이상이면 하한 30점.',
+  quality:  '픽한 카드들의 평균 티어. S=100 / A=80 / B=60 / C=40 / D=20 으로 환산한 단순 평균. 시너지·커버리지와 독립된 차원.',
+  curve:    '코스트 분포의 건전성. 평균 코스트가 1.75 에 가까울수록, 0 / 1 / 2 / 3+ 코스트 버킷이 골고루 있을수록 높음.',
+  coverage: '필수 역할 보유도. Block / Attack / Draw / Energy / Scaling 다섯 카테고리를 빠짐없이 갖췄는가. 30점 만점.',
+  tempo:    '즉발 임팩트 강도. 평균 코스트가 낮고 파워 카드 비중이 적을수록 높음. 스케일링과 의도적으로 anti-correlated — 한쪽이 높으면 다른 쪽이 낮은 편.',
+};
+
+function _drawDeckRadar(svgEl, legendEl, ds) {
+  if (!svgEl || !ds || !ds.axes) return;
+  const a = ds.axes;
+  // 전체 점수 기반 색상 — 빨강(<45) / 노랑(<75) / 초록(>=75)
+  const fill = ds.score >= 75 ? '#52cf6e' : ds.score >= 45 ? '#ffd43b' : '#ff6b6b';
+
+  // viewBox "0 0 380 340" 기준
+  const cx = 190, cy = 170, r = 120;
+
+  // 각 축의 끝점 (값에 비례)
+  const points = _RADAR_AXES.map(ax => {
+    const v = Math.max(0, Math.min(100, a[ax.key] || 0));
+    const rad = ax.angle * Math.PI / 180;
+    return [cx + r * v / 100 * Math.cos(rad), cy + r * v / 100 * Math.sin(rad)];
+  });
+  const polyPts = points.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+
+  // 동심 정육각형 그리드
+  const ring = pct => _RADAR_AXES.map(ax => {
+    const rad = ax.angle * Math.PI / 180;
+    const v = r * pct / 100;
+    return `${(cx + v * Math.cos(rad)).toFixed(1)},${(cy + v * Math.sin(rad)).toFixed(1)}`;
+  }).join(' ');
+
+  // 6개 축 십자선 (중심 → 외곽)
+  const axisLines = _RADAR_AXES.map(ax => {
+    const rad = ax.angle * Math.PI / 180;
+    const x = cx + r * Math.cos(rad);
+    const y = cy + r * Math.sin(rad);
+    return `<line class="radar-axis" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" />`;
+  }).join('');
+
+  // 라벨 위치 — 외곽에서 16px 더 바깥. 수평 anchor 는 cos(angle) 부호로 결정.
+  // <title> 자식 요소로 SVG 네이티브 툴팁 부여 — 호버 시 축 설명 표시 (~1s 지연).
+  const labelDist = r + 16;
+  const labels = _RADAR_AXES.map(ax => {
+    const v = a[ax.key] || 0;
+    const rad = ax.angle * Math.PI / 180;
+    const lx = cx + labelDist * Math.cos(rad);
+    const ly = cy + labelDist * Math.sin(rad) + 4; // 수직 baseline 보정
+    const cosA = Math.cos(rad);
+    const anchor = Math.abs(cosA) < 0.15 ? 'middle' : (cosA > 0 ? 'start' : 'end');
+    const cls = 'radar-label' + (v < 35 ? ' radar-label-weak' : '');
+    const desc = _RADAR_DESCRIPTIONS[ax.key] || '';
+    const titleText = desc ? `${ax.label}: ${desc}` : ax.label;
+    return `<text class="${cls}" x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}"><title>${titleText}</title>${ax.label} ${v}</text>`;
+  }).join('');
+
+  // 꼭짓점 점
+  const vertices = points.map(p =>
+    `<circle class="radar-vertex" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="${fill}" />`
+  ).join('');
+
+  svgEl.innerHTML = `
+    <polygon class="radar-grid" points="${ring(25)}" />
+    <polygon class="radar-grid" points="${ring(50)}" />
+    <polygon class="radar-grid" points="${ring(75)}" />
+    <polygon class="radar-grid radar-grid-outer" points="${ring(100)}" />
+    ${axisLines}
+    <polygon class="radar-baseline" points="${ring(70)}" />
+    <polygon class="radar-fill" points="${polyPts}" style="fill:${fill};stroke:${fill}" />
+    ${vertices}
+    ${labels}
+  `;
+
+  if (legendEl) {
+    const ranked = _RADAR_AXES
+      .map(ax => ({ label: _RADAR_LEGEND_LABEL[ax.key], v: a[ax.key] || 0 }))
+      .sort((x, y) => x.v - y.v);
+    const weakest = ranked[0];
+    const hintHtml = weakest.v < 50
+      ? `<div class="radar-hint">가장 부족: <b>${weakest.label} ${weakest.v}</b> · 점선=권장 70</div>`
+      : `<div class="radar-hint"><span class="radar-ok">균형 양호</span> · 점선=권장 70</div>`;
+    // 접이식 "축 설명" — 모든 축의 정의/계산식 한 줄씩.
+    const descRows = _RADAR_AXES.map(ax => {
+      const v = a[ax.key] || 0;
+      const desc = _RADAR_DESCRIPTIONS[ax.key] || '';
+      return `<dt>${ax.label}<span class="radar-desc-val">${v}</span></dt><dd>${desc}</dd>`;
+    }).join('');
+    const descHtml = `<details class="radar-desc-toggle">`
+      + `<summary>축 설명 보기</summary>`
+      + `<dl class="radar-desc-list">${descRows}</dl>`
+      + `</details>`;
+    legendEl.innerHTML = hintHtml + descHtml;
+    // 호버 툴팁이 뷰포트 하단에 가까우면 펼친 축 설명이 스크롤 영역 밖으로 잘릴 수 있다.
+    // toggle 직후 위치를 점검해 (1) 가용 높이만큼 max-height 를 줄이고 (2) 필요 시 화면 안으로 스크롤.
+    const detailsEl = legendEl.querySelector('.radar-desc-toggle');
+    if (detailsEl) {
+      detailsEl.addEventListener('toggle', () => {
+        if (!detailsEl.open) return;
+        const list = detailsEl.querySelector('.radar-desc-list');
+        if (!list) return;
+        requestAnimationFrame(() => {
+          // 가용 높이 = 리스트 상단부터 뷰포트 하단까지 (마진 12px).
+          const top = list.getBoundingClientRect().top;
+          const avail = window.innerHeight - top - 12;
+          // 최소 140px 보장. 기본 240px 상한은 유지.
+          const cap = Math.max(140, Math.min(240, avail));
+          list.style.maxHeight = cap + 'px';
+          // 그래도 뷰포트 밖으로 비어져 있으면 스크롤로 끌어온다.
+          const rect = list.getBoundingClientRect();
+          if (rect.bottom > window.innerHeight - 8 || rect.top < 8) {
+            list.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+        });
+      });
+    }
+  }
+}
+
+function renderDeckRadar(char, ds) {
+  const panel = getPanel(char);
+  if (!panel) return;
+  const wrap = panel.querySelector('.my-deck-radar-wrap');
+  if (!wrap) return;
+  if (!ds || !ds.axes) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  _drawDeckRadar(
+    wrap.querySelector('.my-deck-radar'),
+    wrap.querySelector('.my-deck-radar-legend'),
+    ds
+  );
 }
 
 function scrollToCard(char, id) {
@@ -2930,6 +3388,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (_verSel) activeVersion = _verSel.value;
   loadUiState();
   loadFromStorage();
+  loadAllRadarPins();
   rebuildAxisFilter();
   applyFilters();
   applySortAll();
@@ -2966,10 +3425,10 @@ document.addEventListener('DOMContentLoaded', () => {
 <h1>STS2 카드 어드바이저<a class="header-link" href="https://github.com/ing-gom/sts2-card-advisor" target="_blank" rel="noopener" title="Github 리포지토리 (다운로드 / 이슈 / 업데이트)">Github ↗</a></h1>
 <div class="version-bar"><span class="version-label">게임 버전</span><select id="version-filter" onchange="setVersion(this.value)"><option value="v0.103.2" selected>v0.103.2 (최신)</option></select><span id="version-meta" class="version-meta"></span></div>
 <div class="ax-axis-legend"><span class="legend-label">축 태그:</span><code class="ax-tag ax-added">초록 = 강화 시 추가</code><code class="ax-tag ax-removed">빨강(취소선) = 강화 시 제거</code><code class="ax-tag ax-upg-val">노란색 = 강화 가치 등급</code><span style="color:rgba(255,190,60,0.7);font-family:var(--mono);font-size:12px">(+)</span><span style="color:var(--text-dim)">= 강화 효과 있음 (호버 시 상세)</span><span style="background:#2d6a4f;color:#b7e4c7;font-size:11px;padding:1px 4px;border-radius:2px;font-family:var(--mono)">↑</span><span style="color:var(--text-dim)">= 강화 시 가치 상승</span></div>
-<div class="my-picks-bar"><span class="filter-label">내 픽</span><button class="act-btn" onclick="exportMyPicks()">JSON 내보내기</button><button class="act-btn" onclick="importMyPicks()">JSON 불러오기</button><button class="act-btn act-danger" onclick="clearMyPicks()">전체 초기화</button><input type="file" id="my-import-file" accept=".json" style="display:none" onchange="handleImportFile(event)"><span id="save-status" class="save-status"></span></div>
+<div class="my-picks-bar"><span class="filter-label">내 픽</span><button class="act-btn" onclick="exportMyPicks()">JSON 내보내기</button><button class="act-btn" onclick="importMyPicks()">JSON 불러오기</button><button class="act-btn act-danger" onclick="clearMyPicks()">전체 초기화</button><input type="file" id="my-import-file" accept=".json" style="display:none" onchange="handleImportFile(event)"><span id="save-status" class="save-status"></span><label class="radar-pin-toggle" title="추천 레이더 툴팁을 호버 없이 고정"><input type="checkbox" id="radar-pin-toggle-picks" onchange="toggleRadarPin('picks', this.checked)"><span>레이더 고정</span></label></div>
 <section id="char-사일런트" class="char-section" data-char-section="사일런트">
 <h2 class="char-section-title">사일런트 <span class="char-count">(181장)</span></h2>
-<div class="my-panel" data-panel-char="사일런트"><div class="my-panel-head"><span class="my-panel-title"><span class="my-panel-char">사일런트</span>★ 내 픽 <span class="my-pick-count">0</span></span><span class="my-panel-hint">카드 행 ☆ 클릭 → 픽 지정 / 시너지 자동 갱신</span><span class="my-panel-actions"><button class="my-panel-clear" onclick="clearCharPicks('사일런트')" title="사일런트 픽 초기화" disabled>픽 초기화</button></span></div><div class="my-pick-list">선택된 카드 없음</div><div class="my-deck-score"><span class="deck-score-label">조합 점수</span><span class="deck-score-empty">픽을 선택하세요</span></div><div class="my-synergy-head">추천 시너지 (역할 기반)</div><div class="my-synergy-list">픽을 먼저 선택하세요</div></div>
+<div class="my-panel" data-panel-char="사일런트"><div class="my-panel-head"><span class="my-panel-title"><span class="my-panel-char">사일런트</span>★ 내 픽 <span class="my-pick-count">0</span></span><span class="my-panel-hint">카드 행 ☆ 클릭 → 픽 지정 / 시너지 자동 갱신</span><span class="my-panel-actions"><button class="my-panel-clear" onclick="clearCharPicks('사일런트')" title="사일런트 픽 초기화" disabled>픽 초기화</button></span></div><div class="my-pick-list">선택된 카드 없음</div><div class="my-deck-summary"><div class="my-deck-score"><span class="deck-score-label">조합 점수</span><span class="deck-score-empty">픽을 선택하세요</span></div><div class="my-deck-radar-wrap" hidden><svg class="my-deck-radar" viewBox="0 0 380 340" aria-label="덱 6축 레이더"></svg><div class="my-deck-radar-legend"></div></div></div><div class="my-synergy-head">추천 시너지 (역할 기반)</div><div class="my-synergy-list">픽을 먼저 선택하세요</div></div>
 <div class="tier-summary">
 <span class="tier-pill" style="background:#ffd700">S: 36</span>
 <span class="tier-pill" style="background:#cc99ff">A: 48</span>
@@ -3853,7 +4312,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </section>
 <section id="char-아이언클래드" class="char-section" data-char-section="아이언클래드">
 <h2 class="char-section-title">아이언클래드 <span class="char-count">(180장)</span></h2>
-<div class="my-panel" data-panel-char="아이언클래드"><div class="my-panel-head"><span class="my-panel-title"><span class="my-panel-char">아이언클래드</span>★ 내 픽 <span class="my-pick-count">0</span></span><span class="my-panel-hint">카드 행 ☆ 클릭 → 픽 지정 / 시너지 자동 갱신</span><span class="my-panel-actions"><button class="my-panel-clear" onclick="clearCharPicks('아이언클래드')" title="아이언클래드 픽 초기화" disabled>픽 초기화</button></span></div><div class="my-pick-list">선택된 카드 없음</div><div class="my-deck-score"><span class="deck-score-label">조합 점수</span><span class="deck-score-empty">픽을 선택하세요</span></div><div class="my-synergy-head">추천 시너지 (역할 기반)</div><div class="my-synergy-list">픽을 먼저 선택하세요</div></div>
+<div class="my-panel" data-panel-char="아이언클래드"><div class="my-panel-head"><span class="my-panel-title"><span class="my-panel-char">아이언클래드</span>★ 내 픽 <span class="my-pick-count">0</span></span><span class="my-panel-hint">카드 행 ☆ 클릭 → 픽 지정 / 시너지 자동 갱신</span><span class="my-panel-actions"><button class="my-panel-clear" onclick="clearCharPicks('아이언클래드')" title="아이언클래드 픽 초기화" disabled>픽 초기화</button></span></div><div class="my-pick-list">선택된 카드 없음</div><div class="my-deck-summary"><div class="my-deck-score"><span class="deck-score-label">조합 점수</span><span class="deck-score-empty">픽을 선택하세요</span></div><div class="my-deck-radar-wrap" hidden><svg class="my-deck-radar" viewBox="0 0 380 340" aria-label="덱 6축 레이더"></svg><div class="my-deck-radar-legend"></div></div></div><div class="my-synergy-head">추천 시너지 (역할 기반)</div><div class="my-synergy-list">픽을 먼저 선택하세요</div></div>
 <div class="tier-summary">
 <span class="tier-pill" style="background:#ffd700">S: 28</span>
 <span class="tier-pill" style="background:#cc99ff">A: 49</span>
@@ -4773,7 +5232,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </section>
 <section id="char-디펙트" class="char-section" data-char-section="디펙트">
 <h2 class="char-section-title">디펙트 <span class="char-count">(181장)</span></h2>
-<div class="my-panel" data-panel-char="디펙트"><div class="my-panel-head"><span class="my-panel-title"><span class="my-panel-char">디펙트</span>★ 내 픽 <span class="my-pick-count">0</span></span><span class="my-panel-hint">카드 행 ☆ 클릭 → 픽 지정 / 시너지 자동 갱신</span><span class="my-panel-actions"><button class="my-panel-clear" onclick="clearCharPicks('디펙트')" title="디펙트 픽 초기화" disabled>픽 초기화</button></span></div><div class="my-pick-list">선택된 카드 없음</div><div class="my-deck-score"><span class="deck-score-label">조합 점수</span><span class="deck-score-empty">픽을 선택하세요</span></div><div class="my-synergy-head">추천 시너지 (역할 기반)</div><div class="my-synergy-list">픽을 먼저 선택하세요</div></div>
+<div class="my-panel" data-panel-char="디펙트"><div class="my-panel-head"><span class="my-panel-title"><span class="my-panel-char">디펙트</span>★ 내 픽 <span class="my-pick-count">0</span></span><span class="my-panel-hint">카드 행 ☆ 클릭 → 픽 지정 / 시너지 자동 갱신</span><span class="my-panel-actions"><button class="my-panel-clear" onclick="clearCharPicks('디펙트')" title="디펙트 픽 초기화" disabled>픽 초기화</button></span></div><div class="my-pick-list">선택된 카드 없음</div><div class="my-deck-summary"><div class="my-deck-score"><span class="deck-score-label">조합 점수</span><span class="deck-score-empty">픽을 선택하세요</span></div><div class="my-deck-radar-wrap" hidden><svg class="my-deck-radar" viewBox="0 0 380 340" aria-label="덱 6축 레이더"></svg><div class="my-deck-radar-legend"></div></div></div><div class="my-synergy-head">추천 시너지 (역할 기반)</div><div class="my-synergy-list">픽을 먼저 선택하세요</div></div>
 <div class="tier-summary">
 <span class="tier-pill" style="background:#ffd700">S: 29</span>
 <span class="tier-pill" style="background:#cc99ff">A: 63</span>
@@ -5654,7 +6113,7 @@ X+1번 발현합니다." data-upg-cost="0" data-upg-axes="ORB_AMPLIFIER,ORB_EVOK
 </section>
 <section id="char-네크로바인더" class="char-section" data-char-section="네크로바인더">
 <h2 class="char-section-title">네크로바인더 <span class="char-count">(181장)</span></h2>
-<div class="my-panel" data-panel-char="네크로바인더"><div class="my-panel-head"><span class="my-panel-title"><span class="my-panel-char">네크로바인더</span>★ 내 픽 <span class="my-pick-count">0</span></span><span class="my-panel-hint">카드 행 ☆ 클릭 → 픽 지정 / 시너지 자동 갱신</span><span class="my-panel-actions"><button class="my-panel-clear" onclick="clearCharPicks('네크로바인더')" title="네크로바인더 픽 초기화" disabled>픽 초기화</button></span></div><div class="my-pick-list">선택된 카드 없음</div><div class="my-deck-score"><span class="deck-score-label">조합 점수</span><span class="deck-score-empty">픽을 선택하세요</span></div><div class="my-synergy-head">추천 시너지 (역할 기반)</div><div class="my-synergy-list">픽을 먼저 선택하세요</div></div>
+<div class="my-panel" data-panel-char="네크로바인더"><div class="my-panel-head"><span class="my-panel-title"><span class="my-panel-char">네크로바인더</span>★ 내 픽 <span class="my-pick-count">0</span></span><span class="my-panel-hint">카드 행 ☆ 클릭 → 픽 지정 / 시너지 자동 갱신</span><span class="my-panel-actions"><button class="my-panel-clear" onclick="clearCharPicks('네크로바인더')" title="네크로바인더 픽 초기화" disabled>픽 초기화</button></span></div><div class="my-pick-list">선택된 카드 없음</div><div class="my-deck-summary"><div class="my-deck-score"><span class="deck-score-label">조합 점수</span><span class="deck-score-empty">픽을 선택하세요</span></div><div class="my-deck-radar-wrap" hidden><svg class="my-deck-radar" viewBox="0 0 380 340" aria-label="덱 6축 레이더"></svg><div class="my-deck-radar-legend"></div></div></div><div class="my-synergy-head">추천 시너지 (역할 기반)</div><div class="my-synergy-list">픽을 먼저 선택하세요</div></div>
 <div class="tier-summary">
 <span class="tier-pill" style="background:#ffd700">S: 32</span>
 <span class="tier-pill" style="background:#cc99ff">A: 53</span>
@@ -6622,7 +7081,7 @@ X장 추가합니다.
 </section>
 <section id="char-리젠트" class="char-section" data-char-section="리젠트">
 <h2 class="char-section-title">리젠트 <span class="char-count">(181장)</span></h2>
-<div class="my-panel" data-panel-char="리젠트"><div class="my-panel-head"><span class="my-panel-title"><span class="my-panel-char">리젠트</span>★ 내 픽 <span class="my-pick-count">0</span></span><span class="my-panel-hint">카드 행 ☆ 클릭 → 픽 지정 / 시너지 자동 갱신</span><span class="my-panel-actions"><button class="my-panel-clear" onclick="clearCharPicks('리젠트')" title="리젠트 픽 초기화" disabled>픽 초기화</button></span></div><div class="my-pick-list">선택된 카드 없음</div><div class="my-deck-score"><span class="deck-score-label">조합 점수</span><span class="deck-score-empty">픽을 선택하세요</span></div><div class="my-synergy-head">추천 시너지 (역할 기반)</div><div class="my-synergy-list">픽을 먼저 선택하세요</div></div>
+<div class="my-panel" data-panel-char="리젠트"><div class="my-panel-head"><span class="my-panel-title"><span class="my-panel-char">리젠트</span>★ 내 픽 <span class="my-pick-count">0</span></span><span class="my-panel-hint">카드 행 ☆ 클릭 → 픽 지정 / 시너지 자동 갱신</span><span class="my-panel-actions"><button class="my-panel-clear" onclick="clearCharPicks('리젠트')" title="리젠트 픽 초기화" disabled>픽 초기화</button></span></div><div class="my-pick-list">선택된 카드 없음</div><div class="my-deck-summary"><div class="my-deck-score"><span class="deck-score-label">조합 점수</span><span class="deck-score-empty">픽을 선택하세요</span></div><div class="my-deck-radar-wrap" hidden><svg class="my-deck-radar" viewBox="0 0 380 340" aria-label="덱 6축 레이더"></svg><div class="my-deck-radar-legend"></div></div></div><div class="my-synergy-head">추천 시너지 (역할 기반)</div><div class="my-synergy-list">픽을 먼저 선택하세요</div></div>
 <div class="tier-summary">
 <span class="tier-pill" style="background:#ffd700">S: 22</span>
 <span class="tier-pill" style="background:#cc99ff">A: 48</span>
@@ -7532,7 +7991,7 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
 </section>
 <section id="char-공용" class="char-section" data-char-section="공용">
 <h2 class="char-section-title">공용 <span class="char-count">(93장)</span></h2>
-<div class="my-panel" data-panel-char="공용"><div class="my-panel-head"><span class="my-panel-title"><span class="my-panel-char">공용</span>★ 내 픽 <span class="my-pick-count">0</span></span><span class="my-panel-hint">카드 행 ☆ 클릭 → 픽 지정 / 시너지 자동 갱신</span><span class="my-panel-actions"><button class="my-panel-clear" onclick="clearCharPicks('공용')" title="공용 픽 초기화" disabled>픽 초기화</button></span></div><div class="my-pick-list">선택된 카드 없음</div><div class="my-deck-score"><span class="deck-score-label">조합 점수</span><span class="deck-score-empty">픽을 선택하세요</span></div><div class="my-synergy-head">추천 시너지 (역할 기반)</div><div class="my-synergy-list">픽을 먼저 선택하세요</div></div>
+<div class="my-panel" data-panel-char="공용"><div class="my-panel-head"><span class="my-panel-title"><span class="my-panel-char">공용</span>★ 내 픽 <span class="my-pick-count">0</span></span><span class="my-panel-hint">카드 행 ☆ 클릭 → 픽 지정 / 시너지 자동 갱신</span><span class="my-panel-actions"><button class="my-panel-clear" onclick="clearCharPicks('공용')" title="공용 픽 초기화" disabled>픽 초기화</button></span></div><div class="my-pick-list">선택된 카드 없음</div><div class="my-deck-summary"><div class="my-deck-score"><span class="deck-score-label">조합 점수</span><span class="deck-score-empty">픽을 선택하세요</span></div><div class="my-deck-radar-wrap" hidden><svg class="my-deck-radar" viewBox="0 0 380 340" aria-label="덱 6축 레이더"></svg><div class="my-deck-radar-legend"></div></div></div><div class="my-synergy-head">추천 시너지 (역할 기반)</div><div class="my-synergy-list">픽을 먼저 선택하세요</div></div>
 <div class="tier-summary">
 <span class="tier-pill" style="background:#ffd700">S: 13</span>
 <span class="tier-pill" style="background:#cc99ff">A: 31</span>
@@ -8020,7 +8479,7 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
 </section>
 </div>
 <div id="main-tab-deck" style="display:none"><div class="deck-page"><h1>덱 분석</h1><div class="deck-controls-bar"><div id="snap-server-badge"></div><div id="snap-status" class="snap-status"></div><button class="snap-clear-btn" onclick="clearSnapCache()" title="모든 런 기록 삭제">전체 삭제</button><button id="deck-help-btn" class="deck-help-btn" onclick="toggleDeckHelp()">? 도움말</button></div><div id="deck-datadir-row" class="deck-datadir-row" style="display:none"><span class="deck-datadir-label">저장 위치</span><span id="deck-datadir-path" class="deck-datadir-path" title="클릭하여 복사"></span><button class="deck-datadir-copy" id="deck-datadir-copy-btn" onclick="copyDataDir()">복사</button></div><div id="deck-help-panel" class="deck-help-panel"><h3>덱 분석 탭 사용 방법</h3><div class="help-step"><span class="deck-help-step-num">1.</span><span><strong>Sts2CardAdvisor</strong> 모드를 먼저 설치한 뒤 STS2를 실행하고 모드를 활성화하세요. 카드 보상·상점 화면에 진입하면 자동으로 런 데이터가 수집됩니다.</span></div><div class="help-step"><span class="deck-help-step-num">2.</span><span>화면 왼쪽 상단의 <strong style="color:var(--phos)">🟢 동기화 중</strong> 배지가 표시되면 게임과 연결된 상태입니다. <strong style="color:#ff6b6b">🔴</strong>이면 게임이 실행중이지 않습니다.</span></div><div class="help-step"><span class="deck-help-step-num">3.</span><span>아래 런 목록에서 항목을 클릭하면 상세 모달이 열립니다.</span></div><div class="deck-help-tab-desc"><div class="deck-help-tab-badge"><strong>보상 기록</strong> — 층별 카드 선택 이력, 현재 덱 구성, 축 분포 차트</div><div class="deck-help-tab-badge"><strong>덱 시너지</strong> — 현재 덱 기준으로 가장 시너지가 높은 추천 카드 목록</div></div><div class="help-step" style="margin-top:10px"><span class="deck-help-step-num">4.</span><span>런이 완전히 종료(승리·패배)되어야 목록에 최종 기록이 남습니다. 진행 중인 런은 <strong style="color:#ffa94d">진행 중</strong>으로 표시됩니다.</span></div></div><div id="snap-run-list" class="snap-run-list deck-run-list"></div></div></div>
-<div id="card-tooltip"><div class="tt-title"></div><div class="tt-desc"></div><div class="tt-upg-wrap" style="display:none"><div class="tt-divider"></div><div class="tt-upg-label">강화</div><div class="tt-upg-desc"></div></div></div><div id="synergy-modal"><div id="synergy-panel"></div></div><div id="axis-guide-modal" onclick="if(event.target.id==='axis-guide-modal')closeAxisGuide()"><div id="axis-guide-panel"><h2>축(Axis) 가이드<button class="syn-close-btn" onclick="closeAxisGuide()">✕ 닫기</button></h2><div class="ag-intro">각 카드에는 <strong>축(Axis)</strong> 태그가 붙어 있습니다. 축은 카드가 어떤 메커니즘에 기여하는지를 나타내며, 어드바이저가 현재 덱의 방향과 맞는 카드를 추천하는 기준으로 사용됩니다.<br>카드 이름 위에 마우스를 올리면 설명을 볼 수 있고, 사이드바의 축 칩을 클릭하면 해당 축을 가진 카드만 필터링됩니다.</div><div class="ag-section-title">역할 접미사 — Producer / Consumer / Amplifier</div><div class="ag-role-grid"><div class="ag-role-card"><div class="ag-role-name">PRODUCER</div><div class="ag-role-desc">해당 자원·메커니즘을 생산하거나 세팅하는 카드. 빌드의 원천 역할.</div></div><div class="ag-role-card"><div class="ag-role-name">CONSUMER</div><div class="ag-role-desc">해당 자원·메커니즘을 소비하거나 조건으로 삼아 이득을 얻는 카드.</div></div><div class="ag-role-card"><div class="ag-role-name">AMPLIFIER</div><div class="ag-role-desc">해당 메커니즘의 효과를 배가하거나 전체 출력을 높이는 카드.</div></div><div class="ag-role-card"><div class="ag-role-name">PAYOFF</div><div class="ag-role-desc">특정 상태(높은 방어도, 구체 보유 등)가 충족됐을 때 이득을 얻는 카드.</div></div></div><div class="ag-search-wrap"><input id="ag-search" class="ag-search-input" type="text" placeholder="축 이름·키워드 검색…" oninput="filterAxisGuide(this.value)" autocomplete="off"><button class="ag-search-clear" onclick="clearAxisGuideSearch()" title="검색 초기화">✕</button><span id="ag-search-count"></span></div><div id="ag-axis-body"></div></div></div><div id="snap-modal" onclick="if(event.target.id==='snap-modal')closeSnap()"><div id="snap-panel"><div class="snap-panel-header"><h2 id="snap-panel-title">덱 스냅샷</h2><button class="syn-close-btn" onclick="closeSnap()">✕ 닫기</button></div><div class="snap-tab-bar"><button class="snap-tab snap-tab-active" id="snap-tab-record-btn" onclick="switchSnapTab('record')">보상 기록</button><button class="snap-tab" id="snap-tab-synergy-btn" onclick="switchSnapTab('synergy')">덱 시너지</button></div><div id="snap-tab-record"><div id="snap-panel-body"></div></div><div id="snap-tab-synergy" style="display:none"></div></div></div>
+<div id="card-tooltip"><div class="tt-title"></div><div class="tt-desc"></div><div class="tt-upg-wrap" style="display:none"><div class="tt-divider"></div><div class="tt-upg-label">강화</div><div class="tt-upg-desc"></div></div></div><div id="synergy-modal"><div id="synergy-panel"></div></div><div id="axis-guide-modal" onclick="if(event.target.id==='axis-guide-modal')closeAxisGuide()"><div id="axis-guide-panel"><h2>축(Axis) 가이드<button class="syn-close-btn" onclick="closeAxisGuide()">✕ 닫기</button></h2><div class="ag-intro">각 카드에는 <strong>축(Axis)</strong> 태그가 붙어 있습니다. 축은 카드가 어떤 메커니즘에 기여하는지를 나타내며, 어드바이저가 현재 덱의 방향과 맞는 카드를 추천하는 기준으로 사용됩니다.<br>카드 이름 위에 마우스를 올리면 설명을 볼 수 있고, 사이드바의 축 칩을 클릭하면 해당 축을 가진 카드만 필터링됩니다.</div><div class="ag-section-title">역할 접미사 — Producer / Consumer / Amplifier</div><div class="ag-role-grid"><div class="ag-role-card"><div class="ag-role-name">PRODUCER</div><div class="ag-role-desc">해당 자원·메커니즘을 생산하거나 세팅하는 카드. 빌드의 원천 역할.</div></div><div class="ag-role-card"><div class="ag-role-name">CONSUMER</div><div class="ag-role-desc">해당 자원·메커니즘을 소비하거나 조건으로 삼아 이득을 얻는 카드.</div></div><div class="ag-role-card"><div class="ag-role-name">AMPLIFIER</div><div class="ag-role-desc">해당 메커니즘의 효과를 배가하거나 전체 출력을 높이는 카드.</div></div><div class="ag-role-card"><div class="ag-role-name">PAYOFF</div><div class="ag-role-desc">특정 상태(높은 방어도, 구체 보유 등)가 충족됐을 때 이득을 얻는 카드.</div></div></div><div class="ag-search-wrap"><input id="ag-search" class="ag-search-input" type="text" placeholder="축 이름·키워드 검색…" oninput="filterAxisGuide(this.value)" autocomplete="off"><button class="ag-search-clear" onclick="clearAxisGuideSearch()" title="검색 초기화">✕</button><span id="ag-search-count"></span></div><div id="ag-axis-body"></div></div></div><div id="snap-modal" onclick="if(event.target.id==='snap-modal')closeSnap()"><div id="snap-panel"><div class="snap-panel-header"><h2 id="snap-panel-title">덱 스냅샷</h2><label class="radar-pin-toggle snap-radar-pin-toggle" title="덱 분석 레이더 툴팁을 호버 없이 고정"><input type="checkbox" id="radar-pin-toggle-snap" onchange="toggleRadarPin('snap', this.checked)"><span>레이더 고정</span></label><button class="syn-close-btn" onclick="closeSnap()">✕ 닫기</button></div><div class="snap-tab-bar"><button class="snap-tab snap-tab-active" id="snap-tab-record-btn" onclick="switchSnapTab('record')">보상 기록</button><button class="snap-tab" id="snap-tab-synergy-btn" onclick="switchSnapTab('synergy')">덱 시너지</button></div><div id="snap-tab-record"><div id="snap-panel-body"></div></div><div id="snap-tab-synergy" style="display:none"></div></div></div>
 <style>
 .snap-section { border-top: 1px solid var(--rule); padding-top: 14px; }
 .snap-load-btn {
@@ -8091,8 +8550,9 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
 }
 #snap-panel::before { top:-1px; left:-1px; border-top:1px solid var(--phos-hi); border-left:1px solid var(--phos-hi); }
 #snap-panel::after  { bottom:-1px; right:-1px; border-bottom:1px solid var(--phos-hi); border-right:1px solid var(--phos-hi); }
-.snap-panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.snap-panel-header { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
 .snap-panel-header h2 { font-family:var(--display); color:var(--phos); font-size:18px; }
+.snap-panel-header .snap-radar-pin-toggle { margin-left:auto; }
 .snap-info-row { display:flex; gap:16px; margin-bottom:8px; font-family:var(--mono); font-size:15px; flex-wrap:wrap; }
 .snap-info-label { color:var(--text-dim); }
 .snap-archs { margin-bottom:12px; display:flex; flex-wrap:wrap; gap:6px; }
@@ -8306,6 +8766,65 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
   animation:snap-spin 0.75s linear infinite;
 }
 @keyframes snap-spin { to { transform:rotate(360deg); } }
+/* ── 덱 파워 레이더 (스냅 모달) — 호버 툴팁 패턴 ──────── */
+.snap-radar-block { }
+/* 요약(평소 보임) + 절대 위치 레이더 wrap 의 앵커 */
+.snap-radar-host {
+  position:relative;
+  padding:8px 4px;
+}
+.snap-radar-summary {
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  cursor:help;
+  padding:4px 0;
+}
+.snap-radar-grade {
+  font-size:36px; font-weight:800; font-family:var(--mono);
+  line-height:1; text-shadow:0 0 12px currentColor;
+}
+.snap-radar-score {
+  color:var(--text); font-weight:700; font-family:var(--mono); font-size:18px;
+}
+.snap-radar-gaps {
+  color:var(--alert); font-size:12px; font-style:italic;
+}
+.snap-radar-hint {
+  margin-left:auto; font-size:12px; letter-spacing:0.05em;
+  color:var(--text-ghost); transition:color 0.15s ease, opacity 0.15s ease;
+  opacity:0.6;
+}
+.snap-radar-host:hover .snap-radar-hint { color:var(--phos); opacity:1; }
+
+/* 호버 시 떠오르는 플로팅 레이더 — my-deck-radar-wrap 패턴과 동일 */
+.snap-radar-wrap {
+  position:absolute;
+  top:calc(100% + 6px);
+  right:0;
+  z-index:50;
+  display:flex; flex-direction:column; align-items:center;
+  padding:8px 10px 6px;
+  background:var(--bg-raised);
+  border:1px solid var(--rule); border-radius:6px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.55);
+  opacity:0; pointer-events:none;
+  transform:translateY(-4px);
+  transition:opacity 0.15s ease, transform 0.15s ease;
+}
+.snap-radar-host:hover .snap-radar-wrap,
+.snap-radar-wrap:hover {
+  opacity:1; pointer-events:auto; transform:translateY(0);
+}
+.snap-deck-radar {
+  width:340px; max-width:100%; height:auto; overflow:visible; display:block;
+}
+.snap-deck-radar-legend {
+  margin-top:6px; font-size:12px; color:var(--text-dim);
+  text-align:center; letter-spacing:0.03em;
+  max-width:340px; line-height:1.4;
+}
+.snap-radar-empty {
+  padding:16px 4px; color:var(--text-ghost); font-size:13px; font-style:italic;
+}
 </style>
 <script>
 (function() {
@@ -8633,6 +9152,38 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
       + '<span class="snap-info-item"><span class="snap-info-label">캐릭터&nbsp;</span><strong>' + (snap.character||'?') + '</strong></span>'
       + '<span class="snap-info-item"><span class="snap-info-label">덱&nbsp;</span><strong>' + snap.deck_size + '장</strong></span>'
       + '</div>';
+
+    // 덱 파워 — 카탈로그와 동일한 호버 툴팁 패턴.
+    // 평소엔 등급 + 점수 + 갭 텍스트만 보이고, 호버 시 6축 헥사곤이 플로팅으로 뜬다.
+    const snapDs = computeSnapDeckScore(snap);
+    if (snapDs && snapDs.axes) {
+      const gc = TIER_COLORS[snapDs.grade] || '#adb5bd';
+      const gapsHtml = snapDs.gaps && snapDs.gaps.length
+        ? '<span class="snap-radar-gaps">' + snapDs.gaps.join(' · ') + '</span>'
+        : '';
+      html += '<div class="snap-block snap-radar-block">'
+        + '<div class="snap-block-title">덱 파워</div>'
+        + '<div class="snap-radar-host">'
+        + '<div class="snap-radar-summary">'
+        + '<span class="snap-radar-grade" style="color:' + gc + '">' + snapDs.grade + '</span>'
+        + '<span class="snap-radar-score">' + snapDs.score + '점</span>'
+        + gapsHtml
+        + '<span class="snap-radar-hint">◆ 호버: 6축</span>'
+        + '</div>'
+        + '<div class="snap-radar-wrap">'
+        + '<svg class="snap-deck-radar" viewBox="0 0 380 340" aria-label="덱 6축 레이더"></svg>'
+        + '<div class="snap-deck-radar-legend"></div>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    } else if ((snap.deck_cards || []).length) {
+      // 캐릭터 카드를 카탈로그에서 못 찾은 경우 (이름 미스매치 등)
+      html += '<div class="snap-block snap-radar-block">'
+        + '<div class="snap-block-title">덱 파워</div>'
+        + '<div class="snap-radar-empty">카탈로그에서 덱 카드를 매칭하지 못해 점수를 계산할 수 없습니다.</div>'
+        + '</div>';
+    }
+
     if (snap.deck_cards && snap.deck_cards.length) {
       html += '<div class="snap-block"><div class="snap-block-title">현재 덱 (' + snap.deck_cards.length + '장)</div>'
         + '<div class="snap-deck-cards">'
@@ -8661,9 +9212,48 @@ X가 2배가 됩니다." data-upg-cost="0" data-upg-axes="DAMAGE,ENERGY,X_COST" 
     document.getElementById('snap-panel-title').textContent =
       (snap.character||'?') + ' — F' + snap.final_floor + ' — ' + outcomeStr;
     body.innerHTML = html;
+    // 덱 파워 SVG 채우기 — innerHTML 후에 가능
+    if (snapDs && snapDs.axes && typeof _drawDeckRadar === 'function') {
+      _drawDeckRadar(
+        body.querySelector('.snap-deck-radar'),
+        body.querySelector('.snap-deck-radar-legend'),
+        snapDs
+      );
+    }
     // 항상 보상 기록 탭으로 시작
     switchSnapTab('record');
     document.getElementById('snap-modal').classList.add('show');
+  }
+
+  // 스냅의 deck_cards (이름 배열) 를 카탈로그의 card-row 와 매칭 → MY_PICKS 임시 교체로
+  // 카탈로그 측 computeDeckScore 를 재사용. 호출 후 원상 복구.
+  function computeSnapDeckScore(snap) {
+    const char = snap.character || '';
+    if (!char) return null;
+    const nameToId = {};
+    document.querySelectorAll('.card-row').forEach(function(row) {
+      if (row.dataset.ownerChar !== char) return;
+      const n = row.dataset.cardName;
+      const id = row.dataset.cardId;
+      if (n && id && !nameToId[n]) nameToId[n] = id;
+    });
+    const picks = (snap.deck_cards || []).map(function(name) {
+      const id = nameToId[name];
+      return id ? { id: id, name: name, isUpgraded: false } : null;
+    }).filter(Boolean);
+    if (picks.length === 0) return null;
+
+    const hasMyPicks = (typeof MY_PICKS !== 'undefined');
+    const prevPicks = hasMyPicks && MY_PICKS[char] ? MY_PICKS[char] : null;
+    if (hasMyPicks) MY_PICKS[char] = { picks: picks };
+    let ds = null;
+    try {
+      if (typeof computeDeckScore === 'function') ds = computeDeckScore(char);
+    } catch(e) {}
+    if (hasMyPicks) {
+      if (prevPicks) MY_PICKS[char] = prevPicks; else delete MY_PICKS[char];
+    }
+    return ds;
   }
 
   // ── 탭 전환 ─────────────────────────────────────────────
